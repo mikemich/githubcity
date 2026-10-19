@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>githubcity</title>
+  <meta name="description" content="Your GitHub as a 3D city. Each repo is a building: height is stars, lit windows are recent commits.">
+  <meta name="theme-color" content="#05060c">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2305060c'/%3E%3Cpath d='M5 27V15h5v12zm7 0V6h7v21zm9 0V11h6v16z' fill='%23ffd58a'/%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="src/styles.css">
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+      }
+    }
+  </script>
+</head>
+<body>
+  <div id="stage" class="stage"></div>
+
+  <header class="bar">
+    <a class="brand" href="./">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M5 27V15h5v12zm7 0V6h7v21zm9 0V11h6v16z" fill="currentColor"/></svg>
+      githubcity
+    </a>
+    <form id="search" class="search" autocomplete="off">
+      <label for="username" class="prefix">github.com/</label>
+      <input id="username" name="username" placeholder="username" autocapitalize="off" spellcheck="false" required>
+      <button type="submit" class="primary">Build</button>
+    </form>
+    <nav class="actions">
+      <button id="orbit" type="button" class="ghost" aria-pressed="true" title="Slowly orbit the city">Orbit</button>
+      <button id="open-settings" type="button" class="ghost">Settings</button>
+      <button id="post" type="button" class="primary" disabled>Post skyline</button>
+    </nav>
+  </header>
+
+  <section id="hero" class="hero">
+    <h1>Your GitHub,<br>as a city.</h1>
+    <p>Every repo is a building. Stars make it taller. Commits from the last 90 days turn its windows on. Build yours, frame the shot, and post the skyline.</p>
+    <div class="chips">
+      <span>Try</span>
+      <button type="button" data-user="torvalds">torvalds</button>
+      <button type="button" data-user="sindresorhus">sindresorhus</button>
+      <button type="button" data-user="tj">tj</button>
+      <button type="button" data-user="demo">demo city</button>
+    </div>
+  </section>
+
+  <p id="status" class="status" role="status" hidden></p>
+  <aside id="stats" class="panel stats" hidden></aside>
+  <aside id="card" class="panel card" hidden></aside>
+  <div id="tooltip" class="tooltip" hidden></div>
+
+  <footer id="legend" class="legend" hidden>
+    <span><i class="key key-height"></i>Height = stars</span>
+    <span><i class="key key-light"></i>Lit windows = commits, 90 days</span>
+    <span><i class="key key-roof"></i>Roof = language</span>
+    <span><i class="key key-car"></i>Traffic = activity</span>
+  </footer>
+
+  <dialog id="settings" class="panel dialog">
+    <form method="dialog">
+      <h2>Settings</h2>
+      <label class="field">
+        <span>GitHub token <em>optional</em></span>
+        <input id="token" type="password" placeholder="github_pat_…" autocomplete="off">
+        <small>Raises the rate limit from 60 to 5,000 requests an hour and counts exact commits per repo. A token with no scopes works. It stays in this tab's memory and is only sent to api.github.com.</small>
+      </label>
+      <label class="check"><input id="forks" type="checkbox"> Include forks</label>
+      <label class="field">
+        <span>Building height</span>
+        <select id="scale">
+          <option value="log">Log scale: every repo gets a presence</option>
+          <option value="linear">Linear: the giants dwarf the rest</option>
+        </select>
+      </label>
+      <div class="row">
+        <button value="cancel" class="ghost">Cancel</button>
+        <button value="apply" class="primary">Apply</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="poster" class="panel dialog poster">
+    <div class="poster-head">
+      <h2>Post your skyline</h2>
+      <div class="seg" role="group" aria-label="Image shape">
+        <button type="button" data-format="wide" aria-pressed="true">16:9</button>
+        <button type="button" data-format="square" aria-pressed="false">Square</button>
+      </div>
+      <button id="close-poster" type="button" class="ghost close" aria-label="Close">✕</button>
+    </div>
+    <div class="poster-frame" data-format="wide"><img id="poster-img" alt="Your city skyline with profile stats"></div>
+    <p class="hint">The image uses your current camera angle. Close this, orbit to the shot you like, and open it again.</p>
+    <div class="row">
+      <button id="download" type="button" class="primary">Download PNG</button>
+      <button id="copy" type="button" class="ghost">Copy image</button>
+      <button id="share" type="button" class="ghost" hidden>Share…</button>
+      <a id="tweet" class="button ghost" target="_blank" rel="noopener">Post to X</a>
+    </div>
+  </dialog>
+
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
